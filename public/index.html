@@ -1,0 +1,31 @@
+<html>
+    <head>
+        <title>Open any url</title>
+        <meta name="description" content="Test a url in Facebook's in-app browser without sharing the link"></meta>
+    </head>
+    <body>
+        <form id="form" method="GET" action="">
+            <input id="input" oninput="updateAction()" type="text" placeholder="http://example.com">
+            <input type="submit" value="GO">
+        <form>
+        <br>
+        <br>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=https://open-url.herokuapp.com/">Share on Facebook</a>
+        <script>
+        function updateAction() {
+            var form = document.getElementById('form')
+            var input = document.getElementById('input')
+            var url = input.value
+            
+            if (url === '' || url.match(/./) === null) {
+                url = ''
+            } else if (url.match(/^http/) === null) {
+                url = 'http://' + url 
+            }
+            form.setAttribute('action', url)
+        }
+
+            
+        </script>
+    </body>
+</html>
