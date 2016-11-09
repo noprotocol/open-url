@@ -2,7 +2,7 @@
 
 <head>
     <title>Open any url</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
     <meta name="description" content="Test any url in Facebook's in-app browser without sharing the link"></meta>
     <meta property="og:image:secure_url" content="https://open-url.herokuapp.com/share-image.jpg">
@@ -10,7 +10,7 @@
     <meta property="og:image:type" content="image/jpeg">
     <style>
         html {
-            font: 16px sans-serif;
+            font: 14px sans-serif;
             margin: 0;
         }
         body {
@@ -20,6 +20,7 @@
         }
         form {
             display: flex;
+            margin: 0;
             
         }
         input[type="text"] {
@@ -29,50 +30,127 @@
             padding: 0 10px;
             outline: none;
             flex-grow: 1;
+            border-radius: 0;
+            -webkit-appearance: none;
+            margin: 0; 
         }
         input[type="submit"] {
+            -webkit-appearance: none;
             background: #4267b2;
-            font-weight: bold;
+            font: bold 14px sans-serif;
             color: white;
             border-color: #4267b2;
             border-width: 2px;
-            padding: 0 10px;
+            padding: 0 8px;
             outline: none;
+            border-radius: 0;
+            margin: 0;
+            cursor: pointer;
+        }
+        label {
+            display: inline-block;
+            margin-top: 4px;
+            font-size: 12px;
         }
         a {
+            color: #4267b2;
+            /*color: white;*/
+            /*text-decoration: none;*/
+            /*line-height:30px;*/
+            /*border-radius: 15px;*/
+            /*padding: 0 10px;*/
+        }
+        h1 {
+            position: absolute;
+            text-indent: -10000px;
+        }
+        h2 {
+            font-size: 14px;
+            margin-top: 40px;
+            margin-bottom: 10px;
+        }
+        #links button {
+            float: left;
+            -webkit-appearance: none;
             display: inline-block;
-            background: #4267b2;
-            color: white;
-            text-decoration: none;
-            line-height:30px;
-            border-radius: 15px;
-            padding: 0 10px;
+            background: none;
+            border: none;
+            padding: 0;
+            line-height: 1.7;
+            font-size: 14px;
+            margin-right: 5px;
+        }
+        #links a {
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.7;
         }
     </style>
 </head>
 
 <body>
-    <form id="form" method="GET" action="">
-        <input id="input" oninput="updateAction()" type="text" placeholder="http://example.com" autofocus>
-        <input type="submit" value="GO">
+    <h1>Open any url</h1>
+    <form>
+        <input type="text" placeholder="http://example.com" autofocus><input type="submit" value="GO">
     </form>
-    <br>
-    <br>
+    <label><input type="checkbox" checked> Remember this url</label>
+    <h2>History</h2>
+    <div id="links"></div>
+    <br><br>
     <a href="https://www.facebook.com/sharer/sharer.php?u=https://open-url.herokuapp.com/" target="_blank">Share this tool</a>
     <script>
-        function updateAction() {
-            var form = document.getElementById('form')
-            var input = document.getElementById('input')
-            var url = input.value
+        var urls = JSON.parse(localStorage.getItem('urls')) || []
+        var form = document.querySelector('form')
+        var input = document.querySelector('input[type="text"]')
+        var checkbox = document.querySelector('input[type="checkbox"]')
+        var links = document.getElementById('links')
             
-            if (url === '' || url.match(/./) === null) {
-                url = ''
-            } else if (url.match(/^http/) === null) {
+        
+        form.onsubmit = function submit(e) {
+            var url = input.value
+            if (url === '') {
+                return false;
+            }
+            if (url.match(/^http/) === null) {
                 url = 'http://' + url 
             }
-            form.setAttribute('action', url)
+            if (checkbox.checked && urls.indexOf(url) === -1) {
+                urls.unshift(url)
+                save()
+            }
+            location.href = url
+            return false;
         }
-        </script>
+        function render() {
+            if (urls.length === 0) {
+                links.innerHTML = '<span style="color:gray">History is empty</span>' 
+            } else {
+                links.innerHTML = '';
+                for (var i in urls) {
+                    var url = urls[i]
+                    var button = document.createElement('button')
+                    button.textContent = '❌';
+                    button.onclick = function (i) {
+                        urls.splice(i, 1);
+                        save()
+                        render()
+                    }.bind(this, i)
+                    links.appendChild(button)
+                    var a = document.createElement('a')
+                    a.href = url
+                    a.textContent = url
+                    
+                    links.appendChild(a)
+                }
+            }
+        }
+        function save() {
+            localStorage.setItem('urls', JSON.stringify(urls, null, 4))
+        }
+        render()
+    </script>
 </body>
 
 </html>
