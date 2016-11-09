@@ -54,11 +54,6 @@
         }
         a {
             color: #4267b2;
-            /*color: white;*/
-            /*text-decoration: none;*/
-            /*line-height:30px;*/
-            /*border-radius: 15px;*/
-            /*padding: 0 10px;*/
         }
         h1 {
             position: absolute;
@@ -100,6 +95,7 @@
     <div id="links"></div>
     <br><br>
     <a href="https://www.facebook.com/sharer/sharer.php?u=https://open-url.herokuapp.com/" target="_blank">Share this tool</a>
+
     <script>
         var urls = JSON.parse(localStorage.getItem('urls')) || []
         var form = document.querySelector('form')
@@ -113,7 +109,7 @@
             if (url === '') {
                 return false;
             }
-            if (url.match(/^http/) === null) {
+            if (url.match(/^http/i) === null) {
                 url = 'http://' + url 
             }
             if (checkbox.checked && urls.indexOf(url) === -1) {
